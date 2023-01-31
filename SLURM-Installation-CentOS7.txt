@@ -142,7 +142,7 @@ useradd  -m -c "SLURM workload manager" -d /var/lib/slurm -u $SLURMUSER -g slurm
 
 [root@master x86_64]# cp /etc/slurm/slurm.conf.example /etc/slurm/slurm.conf
 [root@master x86_64]# mkdir -p /var/share/slurm/ctld
-[root@master x86_64]# mkdir -p /var/share/slurm/d
+[root@master x86_64]# chown -R slurm:slurm /var/share/slurm
 [root@master x86_64]# vi /etc/slurm/slurm.conf
 ----------------------------------------------
 ClusterName=hpcsa
@@ -153,7 +153,7 @@ StateSaveLocation=/var/share/slurm/ctld
 ----------------------------------------------
  Change these Line 7 save file
 ----------------------------------------------
-[root@master x86_64]# chown -R slurm:slurm /var/share/slurm
+
 [root@master x86_64]# touch /var/log/slurmctld.log
 --------------------------------------------------------------------------------------------------
 Run this command on Client machine & Copy Output Line
@@ -281,7 +281,7 @@ Remove all line & paste this lines and save file
 
 [root@node1 ~]# mkdir -p /var/share/slurm/d
 [root@node1 ~]# chown -R slurm:slurm /var/share/slurm
-
+[root@node1 ~]# touch /var/log/slurmd.log
 [root@node1 ~]# chown -R munge:munge /etc/munge
 [root@node1 ~]# ll /etc/munge
 [root@master ~]# chmod 400 /etc/munge/munge.key
@@ -424,6 +424,7 @@ Remove all line & paste this lines and save file
 [root@master ~]# yum install munge munge-libs munge-devel -y
 [root@node1 ~]# mkdir -p /var/share/slurm/d
 [root@node1 ~]# chown -R slurm:slurm /var/share/slurm
+[root@node1 ~]# touch /var/log/slurmd.log
 [root@node1 ~]# chown -R munge:munge /etc/munge
 [root@node1 ~]# ll /etc/munge
 [root@master ~]# chmod 400 /etc/munge/munge.key
