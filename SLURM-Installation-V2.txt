@@ -1,5 +1,5 @@
 ********************************************************************************************
- Nodes Command
+    On Master Commands
 ********************************************************************************************
 
 [root@master ~]# wget https://download.schedmd.com/slurm/slurm-22.05.7.tar.bz2
@@ -65,9 +65,21 @@ NodeName=node2 CPUs=1 Boards=1 SocketsPerBoard=1 CoresPerSocket=1 ThreadsPerCore
 [root@master ~]# systemctl status munge
 [root@master ~]# scontrol update nodename=node2 state=idle    [Node up command into Idle state]
 
+===================================================================================================
+        ***** Run these command after complete slurm installation ****
+===================================================================================================
+[root@master ~]# sinfo
+[root@master ~]# srun -N1 /bin/hostname
+[root@master ~]# srun -N1 --pty /bin/bash
+[root@master ~]# squeue
+[root@master ~]# scancel 12                                   [eg:- JobID-12, for delete job id]
+[root@master ~]# scontrol show node node1                     [eg:- node1 is node]
+[root@master ~]# scontrol show part                           [show all partition name & details]
+[root@master ~]# scontrol show part medium                    [eg:- medium is partition name]
+
 
 ********************************************************************************************
- Nodes Command
+  On Nodes Command
 ********************************************************************************************
 
 [root@master ~]# yum install epel-release -y
@@ -89,3 +101,39 @@ NodeName=node2 CPUs=1 Boards=1 SocketsPerBoard=1 CoresPerSocket=1 ThreadsPerCore
 [root@node1 ~]# systemctl start munge
 [root@node1 ~]# systemctl enable munge
 [root@node1 ~]# systemctl status munge
+
+===================================================================================================
+        ***** Run these command after complete slurm installation ****
+===================================================================================================
+[root@master ~]# sinfo
+[root@node1 ~]# vi jobscript.sh
+--------------------------------------------------
+#!/bin/bash
+# Job name:
+#SBATCH --job-name=test
+#
+# Account:
+##SBATCH --account=account_name
+#
+# Partition:
+##SBATCH --partition=partition_name
+#
+# Request one node:
+#SBATCH --nodes=1
+#
+# Specify one task:
+##SBATCH --ntasks-per-node=1
+#
+## Number of processors for single task needed for use case (example):
+##SBATCH --cpus-per-task=4
+#
+# Wall clock limit:
+#SBATCH --time=00:01:30
+#
+## Command(s) to run (example):
+#export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+/bin/hostname
+sleep 120
+--------------------------------------------------
+[root@node1 ~]# sbatch jobscript.sh
+[root@node1 ~]# scontrol show job 25
