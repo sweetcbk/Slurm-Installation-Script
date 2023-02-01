@@ -43,6 +43,7 @@ StateSaveLocation=/var/share/slurm/ctld
 [root@node1 x86_64]# groupadd -g $SLURMUSER slurm
 [root@node1 x86_64]# useradd  -m -c "SLURM workload manager" -d /var/lib/slurm -u $SLURMUSER -g slurm  -s /bin/bash slurm
 [root@node1 x86_64]# chown -R slurm:slurm /var/share/slurm
+[root@node1 x86_64]# chown -R slurm:slurm /etc/slurm
 [root@master ~]# scp  /etc/slurm/slurm.conf root@node1:/etc/slurm/
 [root@master ~]# scp  /etc/slurm/cgroup.conf root@node1:/etc/slurm/
 --------------------------------------------------------------------------------------------------
@@ -64,6 +65,70 @@ NodeName=node2 CPUs=1 Boards=1 SocketsPerBoard=1 CoresPerSocket=1 ThreadsPerCore
 [root@master ~]# systemctl enable munge
 [root@master ~]# systemctl status munge
 [root@master ~]# scontrol update nodename=node2 state=idle    [Node up command into Idle state]
+
+=================================================================================================
+   Slurm Accounting
+=================================================================================================
+[root@master ~]# cp /etc/slurm/slurmdbd.conf.example /etc/slurm/slurmdbd.conf
+[root@master ~]# vi /etc/slurm/slurmdbd.conf
+---------------------------------------------
+# Database info
+StorageType=accounting_storage/mysql
+StorageHost=localhost
+#StoragePort=1234
+StoragePass=password
+StorageUser=slurm
+StorageLoc=slurm_acct_db
+---------------------------------------------
+ save file
+---------------------------------------------
+[root@master ~]# chown slurm:slurm /etc/slurm/slurmdbd.conf
+[root@master ~]# mkdir /var/log/slurm
+[root@master ~]# touch /var/log/slurm/slurmdbd.log
+[root@master ~]# systemctl start slurmdbd
+[root@master ~]# systemctl enable slurmdbd
+[root@master ~]# systemctl status slurmdbd
+[root@master ~]# systemctl start mariadb
+[root@master ~]# systemctl enable mariadb
+[root@master ~]# systemctl status mariadb
+[root@master ~]# vi /etc/slurm/slurm.conf
+----------------------------------------------------
+# LOGGING AND ACCOUNTING
+AccountingStorageHost=localhost
+AccountingStorageType=accounting_storage/slurmdbd
+AccountingStorageUser=slurm
+----------------------------------------------------
+  save file
+----------------------------------------------------
+[root@master ~]# systemctl restart slurmctld
+[root@master ~]# vi /etc/slurm/slurmdbd.conf
+----------------------------------------------------
+# Database info
+#StoragePass=password
+----------------------------------------------------
+  #Comment Storagepass then save file
+----------------------------------------------------
+[root@master ~]# systemctl restart slurmdbd
+[root@master ~]# systemctl status slurmdbd
+[root@master ~]# systemctl enable slurmdbd
+[root@master ~]# systemctl status slurmdbd
+
+----------------------------------------------------
+ Accounting Commands
+----------------------------------------------------
+[root@master ~]# mysql
+mysql> create user 'slurm'@'localhost';
+MariaDB [(none)]> grant all on slurm_acct_db.* TO 'slurm'@'localhost';
+MariaDB [(none)]> show databases;
+exit
+[root@master ~]# sacctmgr
+sacctmgr: show cluster
+sacctmgr: show user
+sacctmgr: add cluster slurmclustre
+sacctmgr: add account slurm_account
+sacctmgr: add user sneha account=slurm_account
+
+
 
 ===================================================================================================
         ***** Run these command after complete slurm installation ****
