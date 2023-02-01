@@ -1,0 +1,91 @@
+********************************************************************************************
+ Nodes Command
+********************************************************************************************
+
+[root@master ~]# wget https://download.schedmd.com/slurm/slurm-22.05.7.tar.bz2
+[root@master ~]# yum install mariadb-server mariadb-devel -y
+[root@master ~]# yum install epel-release -y
+[root@master ~]# yum install munge munge-libs munge-devel -y
+[root@master ~]# yum install rpm-build -y
+[root@master ~]# yum install python3 -y
+[root@master ~]# yum install pam-devel
+[root@master ~]# yum  install perl-ExtUtils*
+[root@master ~]# yum install gcc
+[root@master ~]# rpmbuild -ta slurm-22.05.7.tar.bz2
+[root@master ~]# /usr/sbin/create-munge-key -r
+[root@master ~]# ll /etc/munge/
+[root@master ~]# chown -R munge:munge /etc/munge
+[root@master ~]# ll /etc/munge/
+[root@master ~]# chmod 400 /etc/munge/munge.key
+-----------------------------------------------------------------
+     First Install Munge on Nodes then Copy munge key
+-----------------------------------------------------------------
+[root@master ~]# scp /etc/munge/munge.key root@node1:/etc/munge/
+[root@master ~]# cd /root/rpmbuild/RPMS/x86_64/
+[root@master x86_64]# yum install slurm*
+[root@master x86_64]# cp /etc/slurm/slurm.conf.example /etc/slurm/slurm.conf
+[root@master x86_64]# cp /etc/slurm/cgroup.conf.example /etc/slurm/cgroup.conf
+[root@master x86_64]# vi /etc/slurm/slurm.conf
+----------------------------------------------
+ClusterName=hpcsa
+SlurmctldHost=master
+
+SlurmdSpoolDir=/var/share/slurm/d
+StateSaveLocation=/var/share/slurm/ctld
+----------------------------------------------
+ Change these Line 7 save file
+----------------------------------------------
+[root@master x86_64]# touch /var/log/slurmctld.log
+-----------------------------------------------------------------
+     First Install Slurm on Nodes then Copy Slurm conf file
+-----------------------------------------------------------------
+[root@node1 x86_64]# export SLURMUSER=1002
+[root@node1 x86_64]# groupadd -g $SLURMUSER slurm
+[root@node1 x86_64]# useradd  -m -c "SLURM workload manager" -d /var/lib/slurm -u $SLURMUSER -g slurm  -s /bin/bash slurm
+[root@node1 x86_64]# chown -R slurm:slurm /var/share/slurm
+[root@master ~]# scp  /etc/slurm/slurm.conf root@node1:/etc/slurm/
+[root@master ~]# scp  /etc/slurm/cgroup.conf root@node1:/etc/slurm/
+--------------------------------------------------------------------------------------------------
+Run this command on Client machine & Copy Output Line
+[root@node1 x86_64]# slurmd -C
+--------------------------------------------------------------------------------------------------
+[root@master x86_64]# vi /etc/slurm/slurm.conf
+--------------------------------------------------------------------------------------------------
+# COMPUTE NODES
+NodeName=node1 CPUs=1 Boards=1 SocketsPerBoard=1 CoresPerSocket=1 ThreadsPerCore=1 RealMemory=1819
+NodeName=node2 CPUs=1 Boards=1 SocketsPerBoard=1 CoresPerSocket=1 ThreadsPerCore=1 RealMemory=1819
+--------------------------------------------------------------------------------------------------
+  Add this line and Save
+--------------------------------------------------------------------------------------------------
+[root@master ~]# systemctl start slurmctld
+[root@master ~]# systemctl enable slurmctld
+[root@master ~]# systemctl status slurmctld
+[root@master ~]# systemctl start munge
+[root@master ~]# systemctl enable munge
+[root@master ~]# systemctl status munge
+[root@master ~]# scontrol update nodename=node2 state=idle    [Node up command into Idle state]
+
+
+********************************************************************************************
+ Nodes Command
+********************************************************************************************
+
+[root@master ~]# yum install epel-release -y
+[root@master ~]# yum install munge munge-libs munge-devel -y
+[root@node1 ~]# mkdir -p /var/share/slurm/d
+[root@node1 ~]# touch /var/log/slurmd.log
+[root@node1 ~]# chown -R munge:munge /etc/munge
+[root@node1 ~]# ll /etc/munge
+[root@master ~]# chmod 400 /etc/munge/munge.key
+[root@node1 ~]# cd /root/rpmbuild/RPMS/x86_64/
+[root@node1 x86_64]# export SLURMUSER=1002
+[root@node1 x86_64]# groupadd -g $SLURMUSER slurm
+[root@node1 x86_64]# useradd  -m -c "SLURM workload manager" -d /var/lib/slurm -u $SLURMUSER -g slurm  -s /bin/bash slurm
+[root@node1 x86_64]# chown -R slurm:slurm /var/share/slurm
+[root@node1 x86_64]# slurmd -C
+[root@node1 ~]# systemctl start slurmd
+[root@node1 ~]# systemctl enable slurmd
+[root@node1 ~]# systemctl status slurmd
+[root@node1 ~]# systemctl start munge
+[root@node1 ~]# systemctl enable munge
+[root@node1 ~]# systemctl status munge
