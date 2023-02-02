@@ -137,7 +137,18 @@ sacctmgr: show assoc format=cluster,user,qos
 [root@master ~]# sinfo
 [root@master ~]# srun -N1 /bin/hostname
 [root@master ~]# srun -N1 --pty /bin/bash
-[root@master ~]# squeue
+[root@master ~]# squeue                                       #show Partition
+---------------------------------------------------------------------------------------------------
+Add partition in slurm
+[root@master ~]# vi /etc/slurm/slurm.conf
+-----------------------------------------------------------------------
+PartitionName=small Nodes=node1 Default=YES MaxTime=INFINITE State=UP
+------------------------------------------------------------------------
+ Add this line in the last line of file slurm.conf
+------------------------------------------------------------------------
+[root@master ~]# systemctl restart slurmctld
+[root@master ~]# sinfo                                     #show partition
+----------------------------------------------------------------------------------------------------
 [root@master ~]# scancel 12                                   [eg:- JobID-12, for delete job id]
 [root@master ~]# scontrol show node node1                     [eg:- node1 is node]
 [root@master ~]# scontrol show part                           [show all partition name & details]
