@@ -139,7 +139,8 @@ sacctmgr: show assoc format=cluster,user,qos
 [root@master ~]# srun -N1 --pty /bin/bash
 [root@master ~]# squeue                                       #show Partition
 ---------------------------------------------------------------------------------------------------
-Add partition in slurm
+                                   Add partition in slurm
+----------------------------------------------------------------------------------------------------
 [root@master ~]# vi /etc/slurm/slurm.conf
 -----------------------------------------------------------------------
 PartitionName=small Nodes=node1 Default=YES MaxTime=INFINITE State=UP
