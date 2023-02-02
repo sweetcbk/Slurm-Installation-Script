@@ -59,6 +59,7 @@ NodeName=node2 CPUs=1 Boards=1 SocketsPerBoard=1 CoresPerSocket=1 ThreadsPerCore
 --------------------------------------------------------------------------------------------------
   Add this line and Save
 --------------------------------------------------------------------------------------------------
+[root@node1 x86_64]# chown -R slurm:slurm /var/share/slurm
 [root@master ~]# scp  /etc/slurm/slurm.conf root@node1:/etc/slurm/
 [root@master ~]# scp  /etc/slurm/cgroup.conf root@node1:/etc/slurm/
 [root@master ~]# systemctl start slurmctld
@@ -168,6 +169,8 @@ sacctmgr: show assoc format=cluster,user,qos
 [root@node1 x86_64]# useradd  -m -c "SLURM workload manager" -d /var/lib/slurm -u $SLURMUSER -g slurm  -s /bin/bash slurm
 [root@node1 x86_64]# chown -R slurm:slurm /var/share/slurm
 [root@node1 x86_64]# slurmd -C
+[root@node1 ~]# chown -R munge:munge /etc/munge
+[root@master ~]# chmod 400 /etc/munge/munge.key
 [root@node1 ~]# systemctl start slurmd
 [root@node1 ~]# systemctl enable slurmd
 [root@node1 ~]# systemctl status slurmd
