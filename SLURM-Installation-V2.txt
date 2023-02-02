@@ -110,9 +110,9 @@ AccountingStorageUser=slurm
 [root@master ~]# systemctl enable slurmdbd
 [root@master ~]# systemctl status slurmdbd
 
-----------------------------------------------------
+---------------------------------------------------------------------------------------------
  Accounting Commands
-----------------------------------------------------
+---------------------------------------------------------------------------------------------
 [root@master ~]# mysql
 mysql> create user 'slurm'@'localhost';
 MariaDB [(none)]> grant all on slurm_acct_db.* TO 'slurm'@'localhost';
@@ -131,6 +131,25 @@ sacctmgr: create  qos DEMO maxwall=2-00:00:00              # for create qos
 sacctmgr: modify user root set qos+=sample                 # for create qos
 sacctmgr: show assoc format=cluster,user,qos               # show all details
 
+----------------------------------------------------------------------------------------------
+            ******************  User Reservation  *************** 
+----------------------------------------------------------------------------------------------
+[root@master ~]# adduser shweta
+[root@master ~]# passwd shweta
+[root@master ~]# scp /etc/passwd root@node1:/etc/passwd    
+[root@master ~]# scp /etc/shadow root@node1:/etc/shadow   
+[root@master ~]# scp /etc/group root@node1:/etc/group    
+[root@master ~]# scp /etc/passwd root@node2:/etc/passwd   
+[root@master ~]# scp /etc/group root@node2:/etc/group    
+[root@master ~]# scp /etc/shadow root@node2:/etc/shadow
+[root@master ~]# cat /etc/passwd
+-----------------------------------------------------------
+Copy User ID (eg:- 1003)
+Eg:->> shweta:x:1003:1003::/home/shweta:/bin/bash
+------------------------------------------------------------
+[root@master ~]# scontrol create reservationname=shweta start=now duration=1 \
+> user=1003 partition=small tres=cpu=1,node=1
+[root@master ~]# scontrol show res                                          #Show Reservation List
 
 ===================================================================================================
         ***** Run these command after complete slurm installation ****
