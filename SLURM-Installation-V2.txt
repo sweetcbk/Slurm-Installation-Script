@@ -124,7 +124,7 @@ sacctmgr: show user
 sacctmgr: add cluster slurmclustre
 sacctmgr: add account slurm_account
 sacctmgr: add user sneha account=slurm_account
-sacctmgr: show qos
+sacctmgr: show qos                                        # show all qos      
 sacctmgr: show user
 sacctmgr: show assoc format=cluster,user,qos
 sacctmgr: create  qos DEMO maxwall=2-00:00:00              # for create qos
