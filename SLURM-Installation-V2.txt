@@ -130,6 +130,12 @@ sacctmgr: show assoc format=cluster,user,qos
 sacctmgr: create  qos DEMO maxwall=2-00:00:00              # for create qos
 sacctmgr: modify user root set qos+=sample                 # for create qos
 sacctmgr: show assoc format=cluster,user,qos               # show all details
+---------------------------------------------------------------------------------------------
+***************   Create  User & User with Priority   ***************************
+---------------------------------------------------------------------------------------------
+[root@master ~]# sacctmgr
+sacctmgr: create  qos DEMO maxwall=2-00:00:00              # Create QOS
+sacctmgr: create qos hpcsa priority=11000                  # Create QOS with Priority
 
 ----------------------------------------------------------------------------------------------
             ******************  User Reservation  *************** 
