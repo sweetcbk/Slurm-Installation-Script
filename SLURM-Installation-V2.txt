@@ -156,9 +156,15 @@ Eg:->> shweta:x:1003:1003::/home/shweta:/bin/bash
 [root@master ~]# scontrol create reservationname=shweta start=now duration=1 \
 > user=1003 partition=small tres=cpu=1,node=1
 [root@master ~]# scontrol show res                                          #Show Reservation List
+---------------------------------------------------------------------------------------------------
+   **********   Create Reservation with Specific Date & Time   *******************
+ ---------------------------------------------------------------------------------------------------
+[root@master ~]# scontrol create reservation starttime=2023-02-02T21:10:30 \
+> duration=120 user=root flags=maint,ignore_jobs nodes=ALL
+---------------------------------------------------------------------------------------------------
 
 ===================================================================================================
-        ***** Run these command after complete slurm installation ****
+        *************  Jobs Releted Basic Commands  ***************
 ===================================================================================================
 [root@master ~]# sinfo
 [root@master ~]# srun -N1 /bin/hostname
