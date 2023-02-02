@@ -1,5 +1,7 @@
 ********************************************************************************************
-    On Master Commands
+********************************************************************************************
+          On MASTER VM Commands
+********************************************************************************************
 ********************************************************************************************
 
 [root@master ~]# wget https://download.schedmd.com/slurm/slurm-22.05.7.tar.bz2
@@ -39,12 +41,12 @@ StateSaveLocation=/var/share/slurm/ctld
 -----------------------------------------------------------------
      First Install Slurm on Nodes then Copy Slurm conf file
 -----------------------------------------------------------------
-[root@node1 x86_64]# export SLURMUSER=1002
-[root@node1 x86_64]# groupadd -g $SLURMUSER slurm
-[root@node1 x86_64]# useradd  -m -c "SLURM workload manager" -d /var/lib/slurm -u $SLURMUSER -g slurm  -s /bin/bash slurm
-[root@node1 x86_64]# chown -R slurm:slurm /var/share/slurm
-[root@node1 x86_64]# mkdir -p /var/share/slurm/ctld
-[root@node1 x86_64]# chown -R slurm:slurm /etc/slurm
+[root@master x86_64]# export SLURMUSER=1002
+[root@master x86_64]# groupadd -g $SLURMUSER slurm
+[root@master x86_64]# useradd  -m -c "SLURM workload manager" -d /var/lib/slurm -u $SLURMUSER -g slurm  -s /bin/bash slurm
+[root@master x86_64]# chown -R slurm:slurm /var/share/slurm
+[root@master x86_64]# mkdir -p /var/share/slurm/ctld
+[root@master x86_64]# chown -R slurm:slurm /etc/slurm
 [root@master ~]# scp  /etc/slurm/slurm.conf root@node1:/etc/slurm/
 [root@master ~]# scp  /etc/slurm/cgroup.conf root@node1:/etc/slurm/
 --------------------------------------------------------------------------------------------------
@@ -188,17 +190,19 @@ PartitionName=small Nodes=node1 Default=YES MaxTime=INFINITE State=UP
 [root@master ~]# scontrol show part medium                    [eg:- medium is partition name]
 
 
-********************************************************************************************
-  On Nodes Command
-********************************************************************************************
+**********************************************************************************************************
+**********************************************************************************************************
+                       On NODE Command
+**********************************************************************************************************
+**********************************************************************************************************
 
-[root@master ~]# yum install epel-release -y
-[root@master ~]# yum install munge munge-libs munge-devel -y
+[root@node1 ~]# yum install epel-release -y
+[root@node1 ~]# yum install munge munge-libs munge-devel -y
 [root@node1 ~]# mkdir -p /var/share/slurm/d
 [root@node1 ~]# touch /var/log/slurmd.log
 [root@node1 ~]# chown -R munge:munge /etc/munge
 [root@node1 ~]# ll /etc/munge
-[root@master ~]# chmod 400 /etc/munge/munge.key
+[root@node1 ~]# chmod 400 /etc/munge/munge.key
 [root@node1 ~]# cd /root/rpmbuild/RPMS/x86_64/
 [root@node1 x86_64]# yum install slurm*
 [root@node1 x86_64]# export SLURMUSER=1002
@@ -207,7 +211,7 @@ PartitionName=small Nodes=node1 Default=YES MaxTime=INFINITE State=UP
 [root@node1 x86_64]# chown -R slurm:slurm /var/share/slurm
 [root@node1 x86_64]# slurmd -C
 [root@node1 ~]# chown -R munge:munge /etc/munge
-[root@master ~]# chmod 400 /etc/munge/munge.key
+[root@node1 ~]# chmod 400 /etc/munge/munge.key
 [root@node1 ~]# systemctl start slurmd
 [root@node1 ~]# systemctl enable slurmd
 [root@node1 ~]# systemctl status slurmd
@@ -216,11 +220,11 @@ PartitionName=small Nodes=node1 Default=YES MaxTime=INFINITE State=UP
 [root@node1 ~]# systemctl status munge
 
 ===================================================================================================
-        ***** Run these command after complete slurm installation ****
+                   *************  JOB SCRIPT SAMPLE FILE    *************
 ===================================================================================================
-[root@master ~]# sinfo
+[root@node1 ~]# sinfo
 [root@node1 ~]# vi jobscript.sh
---------------------------------------------------
+-------------------------------------------------------------------------------------------
 #!/bin/bash
 # Job name:
 #SBATCH --job-name=test
@@ -247,6 +251,7 @@ PartitionName=small Nodes=node1 Default=YES MaxTime=INFINITE State=UP
 #export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 /bin/hostname
 sleep 120
---------------------------------------------------
+------------------------------------------------------------------------------------------------
+  ********* JOB SUBMIT COMMAND **********
 [root@node1 ~]# sbatch jobscript.sh
 [root@node1 ~]# scontrol show job 25           #25 is Job ID
