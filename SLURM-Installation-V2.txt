@@ -237,4 +237,4 @@ PartitionName=small Nodes=node1 Default=YES MaxTime=INFINITE State=UP
 sleep 120
 --------------------------------------------------
 [root@node1 ~]# sbatch jobscript.sh
-[root@node1 ~]# scontrol show job 25
+[root@node1 ~]# scontrol show job 25           #25 is Job ID
